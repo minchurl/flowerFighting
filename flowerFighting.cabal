@@ -6,11 +6,11 @@ cabal-version: 1.12
 
 name:           flowerFighting
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/flowerFighting#readme>
+description:    Please see the README on GitHub at <https://github.com/minchurl/flowerFighting#readme>
 homepage:       https://github.com/githubuser/flowerFighting#readme
 bug-reports:    https://github.com/githubuser/flowerFighting/issues
-author:         Author name here
-maintainer:     example@example.com
+author:         Minchurl Shin
+maintainer:     minchurl@kaist.ac.kr
 copyright:      2021 Author name here
 license:        BSD3
 license-file:   LICENSE
