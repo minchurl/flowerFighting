@@ -2,7 +2,10 @@
 
 module Lib
     (
-      isPlayerExist
+      Name
+    , Score
+    , PlayerScoreMap
+    , isPlayerExist
     , getPlayerScore
     , addPlayer
     , deletePlayer

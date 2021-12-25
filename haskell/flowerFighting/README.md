@@ -30,7 +30,7 @@ You can input the command in this form.
 ```
 
 
-### "start" or "restart"
+### "restart"
 The command initialize score state into 0 and delete all player.
 
 
