@@ -1,6 +1,7 @@
-# Flower Fighting
-# Welcome!
-
-This is a simple haskell drill after the KAIST class CS220. In this project, I will use State monad and IO monad to implement the score-counting in 화투 (Hanafuda, Hwatu).
-
- flowerFighting
+# Welcome!  
+This is implementations for counting score in 화투 (Hanafuda, Hwatu).  
+- Haskell 
+- C++  
+- Python  
+- JS + jQuery
+- Rust

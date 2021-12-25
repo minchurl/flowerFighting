@@ -2,6 +2,7 @@
 
 module Lib
     ( PlayerScoreState(..)
+    , test
     , todo
     , someFunc
     , (|>)

@@ -4,5 +4,7 @@ import Lib
 
 
 main :: IO ()
-main = someFunc 
+main = do 
+   test 
+   return ()
 
