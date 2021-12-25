@@ -4,7 +4,5 @@ import Lib
 
 
 main :: IO ()
-main = do 
-   test 
-   return ()
+main = putStr "Hello World!"
 

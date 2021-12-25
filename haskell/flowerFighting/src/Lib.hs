@@ -1,8 +1,13 @@
 {-# LANGUAGE FlexibleInstances, TupleSections, DeriveGeneric #-}
 
 module Lib
-    ( PlayerScoreState(..)
-    , test
+    (
+      isPlayerExist
+    , getPlayerScore
+    , addPlayer
+    , deletePlayer
+    , addPlayerScore
+    , transmitScore
     , todo
     , someFunc
     , (|>)
@@ -10,10 +15,7 @@ module Lib
 
 
 import System.IO.Unsafe ()
-import           GHC.Generics                   ( Generic )
-import           Generic.Random
-import           Test.Tasty.QuickCheck         as QC
-                                         hiding ( (.&.) )
+import           GHC.Generics                   ( Generic, D )
 
 import           Control.Monad.State.Lazy
 import           Data.Bits
@@ -23,83 +25,47 @@ import           Data.Word
 import           Prelude                 hiding ( read )
 
 newtype Name = Name String deriving (Eq, Ord, Show)
-newtype Score = Score Integer deriving (Eq, Ord, Show)
+newtype Score = Score Int deriving (Eq, Ord, Show)
+newtype PlayerScoreMap = PlayerScoreMap (Map Name Score) deriving (Eq, Ord, Show, Generic)
 
-class Monad m => PlayerScoreState m where
-    isPlayerExist :: Name -> m (Maybe ())
-    addPlayer :: Name -> m (Maybe ())
-    deletePlayer :: Name -> m (Maybe ())
-    addPlayerScore :: Name -> Score -> m (Maybe ())
-    transmitScore :: Name -> Name -> Score -> m (Maybe ())
-    printPlayerScore :: Name -> m (Maybe ())
-    printAllPlayerScore :: m ()
+isPlayerExist :: PlayerScoreMap -> Name -> Maybe ()
+isPlayerExist playerScoreMap name = do
+    let (PlayerScoreMap m) = playerScoreMap
+    Map.lookup name m
+    return ()
 
-newtype PlayerScore = PlayerScore (Map Name Score) deriving (Eq, Ord, Show, Generic)
+getPlayerScore :: PlayerScoreMap -> Name -> Maybe Score
+getPlayerScore playerScoreMap name = do
+    let (PlayerScoreMap m) = playerScoreMap
+    Map.lookup name m
 
--- same implementation with PlayerScoreState (State PlayerScore)
-instance PlayerScoreState (StateT PlayerScore IO) where
-    isPlayerExist name = do
-        PlayerScore playerScore <- get
-        let isExist = playerScore  |> Map.lookup name
-        case isExist of
-            Just _ -> return $ Just ()
-            Nothing -> return Nothing
+addPlayer :: PlayerScoreMap -> Name -> Maybe PlayerScoreMap
+addPlayer playerScoreMap name = do
+    reverseMaybe $ isPlayerExist playerScoreMap name
+    let (PlayerScoreMap m) = playerScoreMap
+    let mm = Map.insert name (Score 0) m
+    return (PlayerScoreMap mm)
 
-    addPlayer name = do
-        PlayerScore playerScore <- get
-        let isExist = playerScore |> Map.lookup name
-        case isExist of
-            Just _ -> return Nothing
-            Nothing -> do
-                playerScore |> Map.insert name (Score 0) |> PlayerScore |> put
-                return $ Just ()
+deletePlayer :: PlayerScoreMap -> Name -> Maybe PlayerScoreMap
+deletePlayer playerScoreMap name = do
+    isPlayerExist playerScoreMap name
+    let (PlayerScoreMap m) = playerScoreMap
+    let mm = Map.delete name m
+    return (PlayerScoreMap mm)
 
-    deletePlayer name = do
-        PlayerScore playerScore <- get
-        let isExist = playerScore  |> Map.lookup name
-        case isExist of
-            Nothing -> return Nothing
-            _ -> do
-                playerScore |> Map.delete name |> PlayerScore |> put
-                return $ Just ()
+addPlayerScore :: PlayerScoreMap -> Name -> Score -> Maybe PlayerScoreMap
+addPlayerScore playerScoreMap name scoreChange = do
+    presentScore <- getPlayerScore playerScoreMap name
+    let (PlayerScoreMap m) = playerScoreMap
+    let mm = Map.insert name (addScore presentScore scoreChange) m
+    return (PlayerScoreMap mm)
 
-    addPlayerScore name score = do
-        PlayerScore playerScore <- get
-        let playerState = playerScore |> Map.lookup name
-        case playerState of
-            Nothing -> return Nothing
-            Just currentScore -> do
-                deletePlayer name
-                playerScore |> Map.insert name (addScore currentScore score) |> PlayerScore |> put
-                return $ Just ()
-
-    transmitScore name1 name2 score = do
-        -- trash code... need to refactoring!
-        res1 <- isPlayerExist name1
-        res2 <- isPlayerExist name2
-        case res1 of
-            Nothing -> return  Nothing
-            _ ->
-                case res2 of
-                    Nothing -> return Nothing
-                    _ -> do
-                        addPlayerScore name1 (minusScore score)
-                        addPlayerScore name2 score
-                        return $ Just ()
-
-    printPlayerScore name = do
-        PlayerScore playerScore <- get
-        let isExist = playerScore |> Map.lookup name
-        case isExist of 
-            Nothing -> return Nothing 
-            Just score -> do 
-                lift $ print score
-                return $ Just ()
-
-
-    printAllPlayerScore = do
-        PlayerScore playerScore <- get
-        lift $ print playerScore
+transmitScore :: PlayerScoreMap -> Name -> Name -> Score -> Maybe PlayerScoreMap
+transmitScore playerScoreMap loser winner scoreChange = do
+    isPlayerExist playerScoreMap loser
+    isPlayerExist playerScoreMap winner
+    m <- addPlayerScore playerScoreMap loser (minusScore scoreChange)
+    addPlayerScore m winner scoreChange
 
 
 (|>) :: v1 -> (v1 -> v2) -> v2
@@ -118,20 +84,11 @@ someFunc :: IO ()
 someFunc = do
    putStrLn "someFunc"
 
+reverseMaybe :: Maybe () -> Maybe ()
+reverseMaybe x =
+    case x of
+        Just () -> Nothing
+        Nothing -> Just ()
+
 todo :: t
 todo = error "todo"
-
-
-testState :: (StateT PlayerScore IO) ()
-testState = do
-    addPlayer (Name "a")
-    addPlayer (Name "b")
-    addPlayer (Name "c")
-    addPlayerScore (Name "a") (Score 100)
-    printAllPlayerScore
-    printPlayerScore (Name "a")
-    return ()
-
-
-test = runStateT testState (PlayerScore Map.empty)
-
