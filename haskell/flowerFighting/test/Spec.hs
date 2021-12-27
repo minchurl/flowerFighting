@@ -1,5 +1,2 @@
-import Lib
-
 main :: IO ()
-main = someFunc
-
+main = putStrLn "Test suite not yet implemented"
