@@ -2,9 +2,9 @@
 
 module Lib
     (
-      Name
-    , Score
-    , PlayerScoreMap
+      Name(..)
+    , Score(..)
+    , PlayerScoreMap(..)
     , isPlayerExist
     , getPlayerScore
     , addPlayer

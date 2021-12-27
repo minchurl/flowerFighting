@@ -37,22 +37,22 @@ The command initialize score state into 0 and delete all player.
 ### "exit"
 The command will halt the program.
 
-### "add \n (player's name)"
+### "addPlayer \n (player's name)"
 The command will add (player's name) player into the name-score map and initialize the player's score as 0
 
 If there exists a player which has the same name, the program will not add the player and print an error message.
 
-### "delete \n (player's name)"
+### "deletePlayer \n (player's name)"
 The command will delete (player's name) player from the name-score map.
 
 If there is no player whose name is (player's name), the program will print an error message.
 
-### "addScore \n (player's name) \n (player's score change)"
+### "addPlayerScore \n (player's name) \n (player's score change)"
 The command will add (player's score change) to (play's name)'s score.
 
 If there is no player whose name is (player's name), the program will print an error message.
 
-### "transmit \n (loser's name) \n (winner's name) \n (score change)"
+### "transmitScore \n (loser's name) \n (winner's name) \n (score change)"
 
 The command will transmit (score change) from (loser's score) to (winner's score)
 
