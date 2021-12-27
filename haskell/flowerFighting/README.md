@@ -58,5 +58,16 @@ The command will transmit (score change) from (loser's score) to (winner's score
 
 If there is no player whose name is (loser's name) or whose name is (winner's name), the program will print an error message.
 
+### "printScore \n (player's name)"
+
+The command will print score of (player's name). 
+
+If there is no player whose name is (player's name), the program will print an error message.
+
+### "printAllScore"
+
+The command will print all player's score.
+
+
 
 

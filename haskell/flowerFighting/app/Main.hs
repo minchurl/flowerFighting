@@ -97,6 +97,23 @@ transmitScoreHandler playerScoreMap = do
             putStrLn " is not a number!"
             return playerScoreMap
 
+printScoreHandler :: PlayerScoreMap -> IO ()
+printScoreHandler playerScoreMap = do 
+    putStr "(player's name): "
+    nameString <- getLine
+    let userName = Name nameString
+
+    case getPlayerScore playerScoreMap userName of 
+        Just score -> do 
+            putStr nameString
+            putStr "'s score is "
+            print score
+            return ()
+        Nothing -> do 
+            putStr nameString
+            putStrLn " is not exist in the player-score map!"
+            return ()
+
 main :: IO ()
 main = do
     hSetBuffering stdout NoBuffering
@@ -109,19 +126,33 @@ main = do
             commandType <- getLine 
             case commandType of 
                 "exit" -> return ()
+
                 "restart" -> loop (PlayerScoreMap Map.empty)
+
                 "addPlayer" -> do 
                     newPlayerScoreMap <- addPlayerHandler playerScoreMap
                     loop newPlayerScoreMap
+
                 "deletePlayer" -> do 
                     newPlayerScoreMap <- deletePlayerHandler playerScoreMap
                     loop newPlayerScoreMap
+
                 "addPlayerScore" -> do 
                     newPlayerScoreMap <- addPlayerScoreHandler playerScoreMap 
                     loop newPlayerScoreMap
+
                 "transmitScore" -> do 
                     newPlayerScoreMap <- transmitScoreHandler playerScoreMap 
                     loop newPlayerScoreMap
+
+                "printScore" -> do 
+                    printScoreHandler playerScoreMap
+                    loop playerScoreMap
+                
+                "printAllScore" -> do 
+                    print playerScoreMap
+                    loop playerScoreMap
+
                 _ -> do 
                     putStrLn "The command is not valid..."
                     loop playerScoreMap
